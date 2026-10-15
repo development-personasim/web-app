@@ -1,0 +1,8 @@
+{
+  "title": "Аккаунт",
+  "description": "Сессия проверена через JWT claims Supabase Auth.",
+  "email": "Email",
+  "userId": "ID пользователя",
+  "signOut": "Выйти",
+  "signedIn": "Вы вошли"
+}

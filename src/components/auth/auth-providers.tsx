@@ -4,9 +4,10 @@ import { MailIcon } from "lucide-react";
 import { useActionState, type ReactNode } from "react";
 
 import { signInWithOAuth } from "@/app/auth/actions";
+import { useT } from "@/components/i18n/dictionary-provider";
 import { Button } from "@/components/ui/button";
-import { initialAuthActionState } from "@/lib/auth/action-state";
 import { useModalQuery } from "@/hooks/use-modal-query";
+import { initialAuthActionState } from "@/lib/auth/action-state";
 import type { OAuthProvider } from "@/lib/auth/schemas";
 import { MODAL_PARAM, authModal } from "@/lib/modals/query";
 
@@ -57,12 +58,12 @@ function AppleIcon() {
 
 const oauthProviders: Array<{
   id: OAuthProvider;
-  label: string;
+  labelKey: "google" | "facebook" | "apple";
   icon: ReactNode;
 }> = [
-  { id: "google", label: "Google", icon: <GoogleIcon /> },
-  { id: "facebook", label: "Facebook", icon: <FacebookIcon /> },
-  { id: "apple", label: "Apple", icon: <AppleIcon /> },
+  { id: "google", labelKey: "google", icon: <GoogleIcon /> },
+  { id: "facebook", labelKey: "facebook", icon: <FacebookIcon /> },
+  { id: "apple", labelKey: "apple", icon: <AppleIcon /> },
 ];
 
 const providerButtonClassName =
@@ -70,6 +71,7 @@ const providerButtonClassName =
 
 export function AuthProviders({ next }: { next?: string }) {
   const { replaceParams } = useModalQuery();
+  const t = useT("auth-providers");
   const [state, formAction, pending] = useActionState(
     signInWithOAuth,
     initialAuthActionState,
@@ -89,7 +91,7 @@ export function AuthProviders({ next }: { next?: string }) {
             disabled={pending}
           >
             {provider.icon}
-            Continue with {provider.label}
+            {t("continueWith", { provider: t(provider.labelKey) })}
           </Button>
         </form>
       ))}
@@ -109,7 +111,7 @@ export function AuthProviders({ next }: { next?: string }) {
         }}
       >
         <MailIcon className="size-5" />
-        Continue with Email
+        {t("continueWith", { provider: t("email") })}
       </Button>
 
       {state.error ? (

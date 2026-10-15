@@ -1,0 +1,8 @@
+{
+  "title": "Account",
+  "description": "Session is verified with Supabase Auth JWT claims.",
+  "email": "Email",
+  "userId": "User id",
+  "signOut": "Sign out",
+  "signedIn": "Signed in"
+}

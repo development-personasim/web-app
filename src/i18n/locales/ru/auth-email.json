@@ -1,0 +1,13 @@
+{
+  "signInTab": "Вход",
+  "signUpTab": "Регистрация",
+  "email": "Email",
+  "password": "Пароль",
+  "confirmPassword": "Подтвердите пароль",
+  "passwordHint": "Не меньше 8 символов, буква и цифра.",
+  "signIn": "Войти",
+  "signingIn": "Входим...",
+  "createAccount": "Создать аккаунт",
+  "creatingAccount": "Создаём...",
+  "checkEmail": "Проверьте почту, подтвердите аккаунт и затем войдите."
+}

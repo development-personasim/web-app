@@ -1,14 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { getPathLocale, stripLocalePrefix } from "@/lib/i18n/paths";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 
-function isProtectedPath(pathname: string) {
-  return pathname.startsWith("/account");
+function isProtectedPath(pathnameWithoutLocale: string) {
+  return pathnameWithoutLocale.startsWith("/account");
 }
 
-function isAuthPage(pathname: string) {
-  return pathname.startsWith("/login") || pathname.startsWith("/signup");
+function isAuthPage(pathnameWithoutLocale: string) {
+  return (
+    pathnameWithoutLocale.startsWith("/login") ||
+    pathnameWithoutLocale.startsWith("/signup")
+  );
 }
 
 export async function updateSession(request: NextRequest) {
@@ -40,22 +44,23 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Keep getClaims next to createServerClient so the session stays fresh.
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
   const { pathname } = request.nextUrl;
+  const locale = getPathLocale(pathname);
+  const barePath = stripLocalePrefix(pathname);
 
-  if (!user && isProtectedPath(pathname)) {
+  if (!user && isProtectedPath(barePath)) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/";
+    redirectUrl.pathname = `/${locale ?? "en"}`;
     redirectUrl.searchParams.set("modal", "auth");
-    redirectUrl.searchParams.set("next", pathname);
+    redirectUrl.searchParams.set("next", barePath);
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && isAuthPage(pathname)) {
+  if (user && isAuthPage(barePath)) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/account";
+    redirectUrl.pathname = `/${locale ?? "en"}/account`;
     return NextResponse.redirect(redirectUrl);
   }
 

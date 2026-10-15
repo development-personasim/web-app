@@ -1,0 +1,13 @@
+{
+  "signInTab": "Sign in",
+  "signUpTab": "Create account",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm password",
+  "passwordHint": "At least 8 characters, with a letter and a number.",
+  "signIn": "Sign in",
+  "signingIn": "Signing in...",
+  "createAccount": "Create account",
+  "creatingAccount": "Creating account...",
+  "checkEmail": "Check your email to confirm your account, then sign in."
+}

@@ -7,6 +7,7 @@ import { signIn, signUp } from "@/app/auth/actions";
 import { AuthProviders } from "@/components/auth/auth-providers";
 import { FieldError } from "@/components/auth/field-error";
 import { PasswordInput } from "@/components/auth/password-input";
+import { useT } from "@/components/i18n/dictionary-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +22,7 @@ import {
 } from "@/lib/modals/query";
 
 function EmailSignInForm({ next }: { next?: string }) {
+  const t = useT("auth-email");
   const [state, formAction, pending] = useActionState(
     signIn,
     initialAuthActionState,
@@ -30,7 +32,7 @@ function EmailSignInForm({ next }: { next?: string }) {
     <form action={formAction} className="grid gap-4" noValidate>
       {next ? <input type="hidden" name="next" value={next} /> : null}
       <div className="grid gap-2">
-        <Label htmlFor="login-email">Email</Label>
+        <Label htmlFor="login-email">{t("email")}</Label>
         <Input
           id="login-email"
           name="email"
@@ -46,7 +48,7 @@ function EmailSignInForm({ next }: { next?: string }) {
         <FieldError id="login-email-error" messages={state.fieldErrors.email} />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="login-password">Password</Label>
+        <Label htmlFor="login-password">{t("password")}</Label>
         <PasswordInput
           id="login-password"
           name="password"
@@ -68,13 +70,14 @@ function EmailSignInForm({ next }: { next?: string }) {
         </p>
       ) : null}
       <Button type="submit" disabled={pending} className="w-full" size="lg">
-        {pending ? "Signing in..." : "Sign in"}
+        {pending ? t("signingIn") : t("signIn")}
       </Button>
     </form>
   );
 }
 
 function EmailSignUpForm() {
+  const t = useT("auth-email");
   const [state, formAction, pending] = useActionState(
     signUp,
     initialAuthActionState,
@@ -83,7 +86,7 @@ function EmailSignUpForm() {
   return (
     <form action={formAction} className="grid gap-4" noValidate>
       <div className="grid gap-2">
-        <Label htmlFor="signup-email">Email</Label>
+        <Label htmlFor="signup-email">{t("email")}</Label>
         <Input
           id="signup-email"
           name="email"
@@ -102,7 +105,7 @@ function EmailSignUpForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="signup-password">Password</Label>
+        <Label htmlFor="signup-password">{t("password")}</Label>
         <PasswordInput
           id="signup-password"
           name="password"
@@ -116,7 +119,7 @@ function EmailSignUpForm() {
           }
         />
         <p id="signup-password-hint" className="text-xs text-muted-foreground">
-          At least 8 characters, with a letter and a number.
+          {t("passwordHint")}
         </p>
         <FieldError
           id="signup-password-error"
@@ -124,7 +127,7 @@ function EmailSignUpForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="signup-confirm-password">Confirm password</Label>
+        <Label htmlFor="signup-confirm-password">{t("confirmPassword")}</Label>
         <PasswordInput
           id="signup-confirm-password"
           name="confirmPassword"
@@ -149,11 +152,11 @@ function EmailSignUpForm() {
       ) : null}
       {state.message ? (
         <p className="text-sm text-muted-foreground" role="status">
-          {state.message}
+          {state.message === "checkEmail" ? t("checkEmail") : state.message}
         </p>
       ) : null}
       <Button type="submit" disabled={pending} className="w-full" size="lg">
-        {pending ? "Creating account..." : "Create account"}
+        {pending ? t("creatingAccount") : t("createAccount")}
       </Button>
     </form>
   );
@@ -162,6 +165,8 @@ function EmailSignUpForm() {
 function EmailMethodPanel({ next }: { next?: string }) {
   const { replaceParams, searchParams } = useModalQuery();
   const view = parseAuthModalView(searchParams.get("view"));
+  const tAuth = useT("auth");
+  const tEmail = useT("auth-email");
 
   return (
     <div className="grid gap-4">
@@ -180,7 +185,7 @@ function EmailMethodPanel({ next }: { next?: string }) {
         }}
       >
         <ArrowLeftIcon className="size-4" />
-        All sign-in options
+        {tAuth("backToProviders")}
       </Button>
 
       <Tabs
@@ -198,8 +203,8 @@ function EmailMethodPanel({ next }: { next?: string }) {
         className="gap-4"
       >
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">Sign in</TabsTrigger>
-          <TabsTrigger value="signup">Create account</TabsTrigger>
+          <TabsTrigger value="login">{tEmail("signInTab")}</TabsTrigger>
+          <TabsTrigger value="signup">{tEmail("signUpTab")}</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
           <EmailSignInForm next={next} />

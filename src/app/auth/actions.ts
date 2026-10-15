@@ -116,7 +116,7 @@ export async function signUp(
 
   return {
     error: null,
-    message: "Check your email to confirm your account, then sign in.",
+    message: "checkEmail",
     fieldErrors: {},
   };
 }
