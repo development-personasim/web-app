@@ -25,6 +25,7 @@ const loaders: Record<
     "auth-email": () => import("@/i18n/locales/en/auth-email.json"),
     account: () => import("@/i18n/locales/en/account.json"),
     personas: () => import("@/i18n/locales/en/personas.json"),
+    chat: () => import("@/i18n/locales/en/chat.json"),
   },
   ru: {
     common: () => import("@/i18n/locales/ru/common.json"),
@@ -35,6 +36,7 @@ const loaders: Record<
     "auth-email": () => import("@/i18n/locales/ru/auth-email.json"),
     account: () => import("@/i18n/locales/ru/account.json"),
     personas: () => import("@/i18n/locales/ru/personas.json"),
+    chat: () => import("@/i18n/locales/ru/chat.json"),
   },
 };
 

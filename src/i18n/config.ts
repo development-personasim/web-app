@@ -15,6 +15,7 @@ export const namespaces = [
   "auth-email",
   "account",
   "personas",
+  "chat",
 ] as const;
 
 export type Namespace = (typeof namespaces)[number];

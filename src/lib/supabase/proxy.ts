@@ -8,7 +8,8 @@ function isProtectedPath(pathnameWithoutLocale: string) {
   return (
     pathnameWithoutLocale.startsWith("/account") ||
     pathnameWithoutLocale === "/personas" ||
-    pathnameWithoutLocale.startsWith("/personas/new")
+    pathnameWithoutLocale.startsWith("/personas/new") ||
+    pathnameWithoutLocale.startsWith("/chats/")
   );
 }
 
