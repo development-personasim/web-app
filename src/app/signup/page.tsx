@@ -1,9 +1,7 @@
-import { SignupForm } from "@/app/signup/signup-form";
+import { redirect } from "next/navigation";
+
+import { authModalHref } from "@/lib/modals/auth";
 
 export default function SignupPage() {
-  return (
-    <main className="flex flex-1 items-center justify-center px-4 py-16">
-      <SignupForm />
-    </main>
-  );
+  redirect(authModalHref({ method: "email", view: "signup" }));
 }

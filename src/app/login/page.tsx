@@ -1,4 +1,6 @@
-import { LoginForm } from "@/app/login/login-form";
+import { redirect } from "next/navigation";
+
+import { authModalHref } from "@/lib/modals/auth";
 
 export default async function LoginPage({
   searchParams,
@@ -6,10 +8,10 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string; error?: string }>;
 }) {
   const params = await searchParams;
-
-  return (
-    <main className="flex flex-1 items-center justify-center px-4 py-16">
-      <LoginForm next={params.next} authError={params.error} />
-    </main>
+  redirect(
+    authModalHref({
+      next: params.next,
+      error: params.error,
+    }),
   );
 }

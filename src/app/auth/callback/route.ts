@@ -1,22 +1,34 @@
 import { NextResponse } from "next/server";
 
+import { safeNextPath } from "@/lib/auth/urls";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next");
-  const nextPath =
-    next && next.startsWith("/") && !next.startsWith("//") ? next : "/account";
+  const nextPath = safeNextPath(searchParams.get("next"), "/");
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      const forwardedHost = request.headers.get("x-forwarded-host");
+      const isLocalEnv = process.env.NODE_ENV === "development";
+
+      if (isLocalEnv) {
+        return NextResponse.redirect(`${origin}${nextPath}`);
+      }
+
+      if (forwardedHost) {
+        return NextResponse.redirect(`https://${forwardedHost}${nextPath}`);
+      }
+
       return NextResponse.redirect(`${origin}${nextPath}`);
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth-code-error`);
+  return NextResponse.redirect(`${origin}/?modal=auth&error=auth-code-error`);
 }
+
+
