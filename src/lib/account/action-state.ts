@@ -17,6 +17,7 @@ export type DeleteActionState = {
   error: string | null;
   fieldErrors: DeleteFieldErrors;
   values: { confirmEmail?: string };
+  deleted: boolean;
   formKey: number;
 };
 
@@ -39,6 +40,7 @@ export const initialDeleteActionState: DeleteActionState = {
   error: null,
   fieldErrors: {},
   values: {},
+  deleted: false,
   formKey: 0,
 };
 

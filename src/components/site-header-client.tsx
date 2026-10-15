@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -56,22 +57,24 @@ export function HeaderSignedIn({
       <DropdownMenuContent align="end" className="min-w-48">
         {user.username || user.email || user.name ? (
           <>
-            <DropdownMenuLabel className="font-normal">
-              {user.username ? (
-                <p className="truncate text-sm font-medium text-foreground">
-                  @{user.username}
-                </p>
-              ) : user.name ? (
-                <p className="truncate text-sm font-medium text-foreground">
-                  {user.name}
-                </p>
-              ) : null}
-              {user.email ? (
-                <p className="truncate text-xs text-muted-foreground">
-                  {user.email}
-                </p>
-              ) : null}
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="font-normal">
+                {user.username ? (
+                  <p className="truncate text-sm font-medium text-foreground">
+                    @{user.username}
+                  </p>
+                ) : user.name ? (
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {user.name}
+                  </p>
+                ) : null}
+                {user.email ? (
+                  <p className="truncate text-xs text-muted-foreground">
+                    {user.email}
+                  </p>
+                ) : null}
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
           </>
         ) : null}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { createPersonaAction } from "@/app/personas/actions";
 import { FieldError } from "@/components/auth/field-error";
@@ -9,16 +10,38 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { localizePathname } from "@/i18n/pathname";
 import { initialCreatePersonaActionState } from "@/lib/personas/action-state";
+import type { PersonaWithCreator } from "@/lib/personas/types";
 
-export function CreatePersonaForm() {
+export function CreatePersonaForm({
+  onCreated,
+}: {
+  onCreated?: (persona: PersonaWithCreator) => void;
+} = {}) {
   const t = useT("personas");
   const { locale } = useDictionary();
+  const router = useRouter();
+  const lastHandledKey = useRef(0);
   const [state, formAction, pending] = useActionState(
     createPersonaAction,
     initialCreatePersonaActionState,
   );
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (state.formKey === lastHandledKey.current) {
+      return;
+    }
+    lastHandledKey.current = state.formKey;
+
+    if (!state.persona) {
+      return;
+    }
+
+    onCreated?.(state.persona);
+    router.push(localizePathname(`/personas/${state.persona.id}`, locale));
+  }, [locale, onCreated, router, state.formKey, state.persona]);
 
   const initials = [
     state.values.firstName?.[0] ?? "",
@@ -28,12 +51,7 @@ export function CreatePersonaForm() {
     .toUpperCase() || "?";
 
   return (
-    <form
-      key={state.formKey}
-      action={formAction}
-      className="grid gap-5"
-      noValidate
-    >
+    <form action={formAction} className="grid gap-5" noValidate>
       <input type="hidden" name="lang" value={locale} />
       <div className="flex items-center gap-4">
         <Avatar size="lg">
@@ -121,8 +139,13 @@ export function CreatePersonaForm() {
         </p>
       ) : null}
 
-      <Button type="submit" disabled={pending} size="lg" className="w-full">
-        {pending ? t("creating") : t("create")}
+      <Button
+        type="submit"
+        disabled={pending || Boolean(state.persona)}
+        size="lg"
+        className="w-full"
+      >
+        {pending || state.persona ? t("creating") : t("create")}
       </Button>
     </form>
   );

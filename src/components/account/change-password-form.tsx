@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 
 import { changePassword } from "@/app/account/actions";
 import { FieldError } from "@/components/auth/field-error";
@@ -13,14 +13,27 @@ import { initialPasswordActionState } from "@/lib/account/action-state";
 export function ChangePasswordForm() {
   const t = useT("account");
   const { locale } = useDictionary();
+  const formRef = useRef<HTMLFormElement>(null);
+  const lastHandledKey = useRef(0);
   const [state, formAction, pending] = useActionState(
     changePassword,
     initialPasswordActionState,
   );
 
+  useEffect(() => {
+    if (state.formKey === lastHandledKey.current) {
+      return;
+    }
+    lastHandledKey.current = state.formKey;
+
+    if (state.message === "updated") {
+      formRef.current?.reset();
+    }
+  }, [state.formKey, state.message]);
+
   return (
     <form
-      key={state.formKey}
+      ref={formRef}
       action={formAction}
       className="grid gap-4"
       noValidate
@@ -92,6 +105,12 @@ export function ChangePasswordForm() {
       {state.error ? (
         <p className="text-sm text-destructive" role="alert">
           {state.error}
+        </p>
+      ) : null}
+
+      {state.message === "updated" ? (
+        <p className="text-sm text-muted-foreground" role="status">
+          {t("passwordUpdated")}
         </p>
       ) : null}
 

@@ -25,13 +25,7 @@ import { cn } from "@/lib/utils";
 
 export const instant = false;
 
-async function AccountContent({
-  lang,
-  passwordUpdated,
-}: {
-  lang: "en" | "ru";
-  passwordUpdated: boolean;
-}) {
+async function AccountContent({ lang }: { lang: "en" | "ru" }) {
   const { claims, error } = await getAuthClaims();
 
   if (error || !claims) {
@@ -58,11 +52,6 @@ async function AccountContent({
             <CardDescription>{t("account.description")}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            {passwordUpdated ? (
-              <p className="text-sm text-muted-foreground" role="status">
-                {t("account.passwordUpdated")}
-              </p>
-            ) : null}
             <div className="grid gap-1 text-sm">
               <p className="text-muted-foreground">{t("account.email")}</p>
               <p>{email}</p>
@@ -99,19 +88,15 @@ async function AccountContent({
 
 export default async function AccountPage({
   params,
-  searchParams,
 }: PageProps<"/[lang]/account">) {
   const { lang } = await params;
   if (!isLocale(lang)) {
     notFound();
   }
 
-  const query = await searchParams;
-  const passwordUpdated = query.password === "updated";
-
   return (
     <Suspense fallback={null}>
-      <AccountContent lang={lang} passwordUpdated={passwordUpdated} />
+      <AccountContent lang={lang} />
     </Suspense>
   );
 }

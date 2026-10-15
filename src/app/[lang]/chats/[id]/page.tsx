@@ -62,7 +62,7 @@ async function ChatContent({
         <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
         <ChatThread
           chatId={chat.id}
-          messages={messages}
+          initialMessages={messages}
           currentUserId={userId}
           emptyLabel={t("chat.empty")}
         />

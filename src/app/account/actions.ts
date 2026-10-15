@@ -1,7 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import type {
   DeleteActionState,
   PasswordActionState,
@@ -17,8 +15,6 @@ import {
   deleteAccountSchema,
   updateUsernameSchema,
 } from "@/lib/auth/schemas";
-import { getActionLocale } from "@/i18n/action-locale";
-import { localizePathname } from "@/i18n/pathname";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -193,8 +189,12 @@ export async function changePassword(
     };
   }
 
-  const locale = await getActionLocale(formData);
-  redirect(`${localizePathname("/account", locale)}?password=updated`);
+  return {
+    error: null,
+    message: "updated",
+    fieldErrors: {},
+    formKey: prev.formKey + 1,
+  };
 }
 
 export async function deleteAccount(
@@ -212,6 +212,7 @@ export async function deleteAccount(
       error: null,
       fieldErrors: parsed.error.flatten().fieldErrors,
       values,
+      deleted: false,
       formKey: prev.formKey + 1,
     };
   }
@@ -227,6 +228,7 @@ export async function deleteAccount(
       error: "You must be signed in to delete your account.",
       fieldErrors: {},
       values,
+      deleted: false,
       formKey: prev.formKey + 1,
     };
   }
@@ -238,6 +240,7 @@ export async function deleteAccount(
         confirmEmail: ["Email does not match your account."],
       },
       values,
+      deleted: false,
       formKey: prev.formKey + 1,
     };
   }
@@ -257,6 +260,7 @@ export async function deleteAccount(
         error: mapAccountError(deleteError.message),
         fieldErrors: {},
         values,
+        deleted: false,
         formKey: prev.formKey + 1,
       };
     }
@@ -267,12 +271,18 @@ export async function deleteAccount(
       error: mapAccountError(message),
       fieldErrors: {},
       values,
+      deleted: false,
       formKey: prev.formKey + 1,
     };
   }
 
   await supabase.auth.signOut();
 
-  const locale = await getActionLocale(formData);
-  redirect(localizePathname("/", locale));
+  return {
+    error: null,
+    fieldErrors: {},
+    values: {},
+    deleted: true,
+    formKey: prev.formKey + 1,
+  };
 }

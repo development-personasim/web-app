@@ -1,20 +1,31 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { localizePathname } from "@/i18n/pathname";
+import type { Locale } from "@/i18n/config";
 import type { PersonaWithCreator } from "@/lib/personas/types";
 import { cn } from "@/lib/utils";
 
 export function PersonaList({
-  personas,
-  hrefForPersona,
+  initialPersonas,
+  locale,
   emptyLabel,
   privateLabel,
 }: {
-  personas: PersonaWithCreator[];
-  hrefForPersona: (id: string) => string;
+  initialPersonas: PersonaWithCreator[];
+  locale: Locale;
   emptyLabel: string;
   privateLabel: string;
 }) {
+  const [personas, setPersonas] = useState(initialPersonas);
+
+  useEffect(() => {
+    setPersonas(initialPersonas);
+  }, [initialPersonas]);
+
   if (personas.length === 0) {
     return <p className="text-sm text-muted-foreground">{emptyLabel}</p>;
   }
@@ -30,7 +41,7 @@ export function PersonaList({
         return (
           <li key={persona.id}>
             <Link
-              href={hrefForPersona(persona.id)}
+              href={localizePathname(`/personas/${persona.id}`, locale)}
               className={cn(
                 "flex items-center gap-3 rounded-lg border border-border/80 px-3 py-2.5",
                 "transition-colors hover:bg-muted/50",

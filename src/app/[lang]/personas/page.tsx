@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 
+import { DictionaryProvider } from "@/components/i18n/dictionary-provider";
 import { PersonaList } from "@/components/personas/persona-list";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -34,30 +35,32 @@ async function PersonasContent({ lang }: { lang: "en" | "ru" }) {
   const personas = await listPersonasByCreator(userId);
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-16">
-      <Card>
-        <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
-          <div className="grid gap-1.5">
-            <CardTitle>{t("personas.title")}</CardTitle>
-            <CardDescription>{t("personas.description")}</CardDescription>
-          </div>
-          <Link
-            href={localizePathname("/personas/new", lang)}
-            className={cn(buttonVariants({ size: "sm" }), "shrink-0")}
-          >
-            {t("personas.create")}
-          </Link>
-        </CardHeader>
-        <CardContent>
-          <PersonaList
-            personas={personas}
-            hrefForPersona={(id) => localizePathname(`/personas/${id}`, lang)}
-            emptyLabel={t("personas.empty")}
-            privateLabel={t("personas.private")}
-          />
-        </CardContent>
-      </Card>
-    </main>
+    <DictionaryProvider locale={lang} dictionaries={dictionaries}>
+      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-16">
+        <Card>
+          <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
+            <div className="grid gap-1.5">
+              <CardTitle>{t("personas.title")}</CardTitle>
+              <CardDescription>{t("personas.description")}</CardDescription>
+            </div>
+            <Link
+              href={localizePathname("/personas/new", lang)}
+              className={cn(buttonVariants({ size: "sm" }), "shrink-0")}
+            >
+              {t("personas.create")}
+            </Link>
+          </CardHeader>
+          <CardContent>
+            <PersonaList
+              initialPersonas={personas}
+              locale={lang}
+              emptyLabel={t("personas.empty")}
+              privateLabel={t("personas.private")}
+            />
+          </CardContent>
+        </Card>
+      </main>
+    </DictionaryProvider>
   );
 }
 

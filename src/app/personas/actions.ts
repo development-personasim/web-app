@@ -1,10 +1,8 @@
 "use server";
 
 import { randomUUID } from "crypto";
-import { redirect } from "next/navigation";
 
-import { getActionLocale } from "@/i18n/action-locale";
-import { localizePathname } from "@/i18n/pathname";
+import { getProfileUsername } from "@/lib/account/profiles";
 import type { CreatePersonaActionState } from "@/lib/personas/action-state";
 import { createPersona } from "@/lib/personas/db";
 import { createPersonaSchema } from "@/lib/personas/schemas";
@@ -40,6 +38,7 @@ export async function createPersonaAction(
       error: null,
       fieldErrors: parsed.error.flatten().fieldErrors,
       values,
+      persona: null,
       formKey: prev.formKey + 1,
     };
   }
@@ -55,6 +54,7 @@ export async function createPersonaAction(
       error: "You must be signed in to create a persona.",
       fieldErrors: {},
       values,
+      persona: null,
       formKey: prev.formKey + 1,
     };
   }
@@ -77,13 +77,14 @@ export async function createPersonaAction(
         error: message,
         fieldErrors: { avatar: [message] },
         values,
+        persona: null,
         formKey: prev.formKey + 1,
       };
     }
   }
 
   try {
-    await createPersona({
+    const persona = await createPersona({
       id: personaId,
       creatorId: user.id,
       firstName: parsed.data.firstName,
@@ -91,6 +92,18 @@ export async function createPersonaAction(
       avatarUrl,
       visibility: "private",
     });
+    const creatorUsername = await getProfileUsername(user.id);
+
+    return {
+      error: null,
+      fieldErrors: {},
+      values: {},
+      persona: {
+        ...persona,
+        creatorUsername,
+      },
+      formKey: prev.formKey + 1,
+    };
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Could not create persona.";
@@ -98,10 +111,8 @@ export async function createPersonaAction(
       error: message,
       fieldErrors: {},
       values,
+      persona: null,
       formKey: prev.formKey + 1,
     };
   }
-
-  const locale = await getActionLocale(formData);
-  redirect(localizePathname(`/personas/${personaId}`, locale));
 }

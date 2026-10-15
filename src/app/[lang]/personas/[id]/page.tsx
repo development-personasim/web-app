@@ -77,7 +77,7 @@ async function PersonaChatContent({
         />
         <ChatThread
           chatId={chat.id}
-          messages={messages}
+          initialMessages={messages}
           currentUserId={userId}
           emptyLabel={t("chat.empty")}
         />
