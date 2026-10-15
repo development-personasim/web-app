@@ -2,14 +2,22 @@ export const MODAL_PARAM = "modal";
 
 export const authModal = {
   id: "auth",
-  keys: ["view", "next", "error", "method"] as const,
+  keys: ["view", "next", "error", "method", "email"] as const,
 } as const;
 
-export type AuthModalView = "login" | "signup";
+export type AuthModalView = "login" | "signup" | "check-email";
 export type AuthModalMethod = "email";
 
 export function parseAuthModalView(value: string | null): AuthModalView {
-  return value === "signup" ? "signup" : "login";
+  if (value === "signup") {
+    return "signup";
+  }
+
+  if (value === "check-email") {
+    return "check-email";
+  }
+
+  return "login";
 }
 
 export function parseAuthModalMethod(

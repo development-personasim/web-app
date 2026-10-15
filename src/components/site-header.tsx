@@ -7,19 +7,22 @@ import {
   HeaderSignedIn,
   HeaderSignedOut,
 } from "@/components/site-header-client";
+import { userAvatarFromClaims } from "@/lib/auth/avatar";
 import { getLocale } from "@/i18n/load-dictionaries";
 import { localizePathname } from "@/i18n/pathname";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims } from "@/lib/supabase/auth";
 
 async function HeaderAuth() {
   const locale = await getLocale();
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  const isSignedIn = Boolean(data?.claims);
+  const { claims } = await getAuthClaims();
 
-  if (isSignedIn) {
+  if (claims) {
     return (
-      <HeaderSignedIn accountHref={localizePathname("/account", locale)} />
+      <HeaderSignedIn
+        accountHref={localizePathname("/account", locale)}
+        personasHref={localizePathname("/personas", locale)}
+        user={userAvatarFromClaims(claims)}
+      />
     );
   }
 

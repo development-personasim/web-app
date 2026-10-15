@@ -1,0 +1,17 @@
+{
+  "title": "My personas",
+  "description": "AI personas you have created.",
+  "create": "Create persona",
+  "createTitle": "New persona",
+  "createDescription": "Add a name and optional avatar. Personas start as private.",
+  "creating": "Creating...",
+  "empty": "You have not created any personas yet.",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "avatar": "Avatar",
+  "avatarHint": "JPEG, PNG, or WebP up to 2 MB.",
+  "private": "Private",
+  "privateDefault": "New personas are private. Publishing will come later.",
+  "creator": "Created by",
+  "backToList": "Back to personas"
+}

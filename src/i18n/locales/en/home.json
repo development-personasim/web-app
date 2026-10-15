@@ -1,4 +1,6 @@
 {
   "title": "PersonaSim",
-  "description": "Sign in from the header to create an account or access yours."
+  "description": "Create AI personas and manage your account from the header.",
+  "createPersona": "Create persona",
+  "myPersonas": "My personas"
 }

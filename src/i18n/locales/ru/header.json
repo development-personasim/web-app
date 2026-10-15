@@ -1,6 +1,7 @@
 {
   "brand": "PersonaSim",
   "login": "Войти",
-  "account": "Аккаунт",
+  "account": "Профиль",
+  "personas": "Персоны",
   "signOut": "Выйти"
 }

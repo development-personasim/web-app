@@ -5,7 +5,11 @@ import { getPathLocale, stripLocalePrefix } from "@/lib/i18n/paths";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 
 function isProtectedPath(pathnameWithoutLocale: string) {
-  return pathnameWithoutLocale.startsWith("/account");
+  return (
+    pathnameWithoutLocale.startsWith("/account") ||
+    pathnameWithoutLocale === "/personas" ||
+    pathnameWithoutLocale.startsWith("/personas/new")
+  );
 }
 
 function isAuthPage(pathnameWithoutLocale: string) {

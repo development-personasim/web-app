@@ -14,28 +14,44 @@ import {
 import { useModalQuery } from "@/hooks/use-modal-query";
 import type { Locale } from "@/i18n/config";
 import { loadClientDictionaries } from "@/i18n/load-dictionaries.client";
-import { authModal, parseAuthModalMethod } from "@/lib/modals/query";
+import {
+  authModal,
+  parseAuthModalMethod,
+  parseAuthModalView,
+} from "@/lib/modals/query";
 
 function AuthModalContent({
   method,
+  view,
   nextParam,
   errorParam,
 }: {
   method: "email" | null;
+  view: "login" | "signup" | "check-email";
   nextParam?: string;
   errorParam: string | null;
 }) {
   const t = useT("auth");
 
+  const title =
+    view === "check-email"
+      ? t("checkEmailTitle")
+      : method === "email"
+        ? t("emailTitle")
+        : t("welcomeTitle");
+
+  const description =
+    view === "check-email"
+      ? t("checkEmailDescription")
+      : method === "email"
+        ? t("emailDescription")
+        : t("welcomeDescription");
+
   return (
     <DialogContent className="sm:max-w-md">
       <DialogHeader>
-        <DialogTitle>
-          {method === "email" ? t("emailTitle") : t("welcomeTitle")}
-        </DialogTitle>
-        <DialogDescription>
-          {method === "email" ? t("emailDescription") : t("welcomeDescription")}
-        </DialogDescription>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       {errorParam ? (
         <p className="text-sm text-destructive" role="alert">
@@ -53,6 +69,7 @@ export function AuthModalDialog({ locale }: { locale: Locale }) {
   const nextParam = searchParams.get("next") ?? undefined;
   const errorParam = searchParams.get("error");
   const method = parseAuthModalMethod(searchParams.get("method"));
+  const view = parseAuthModalView(searchParams.get("view"));
 
   const [dictionaries, setDictionaries] = useState<Record<
     string,
@@ -94,6 +111,7 @@ export function AuthModalDialog({ locale }: { locale: Locale }) {
         <DictionaryProvider locale={locale} dictionaries={dictionaries}>
           <AuthModalContent
             method={method}
+            view={view}
             nextParam={nextParam}
             errorParam={errorParam}
           />

@@ -44,10 +44,10 @@ export function prepareLocaleRequest(request: NextRequest): {
 } {
   const { pathname } = request.nextUrl;
 
-  if (pathname === "/auth/callback") {
+  if (pathname === "/auth/callback" || pathname === "/auth/confirm") {
     const locale = getRequestLocale(request);
     const url = request.nextUrl.clone();
-    url.pathname = `/${locale}/auth/callback`;
+    url.pathname = `/${locale}${pathname}`;
     return {
       request: new NextRequest(url, request),
       locale,

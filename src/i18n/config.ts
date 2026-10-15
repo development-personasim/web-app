@@ -14,6 +14,7 @@ export const namespaces = [
   "auth-providers",
   "auth-email",
   "account",
+  "personas",
 ] as const;
 
 export type Namespace = (typeof namespaces)[number];

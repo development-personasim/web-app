@@ -24,6 +24,7 @@ const loaders: Record<
     "auth-providers": () => import("@/i18n/locales/en/auth-providers.json"),
     "auth-email": () => import("@/i18n/locales/en/auth-email.json"),
     account: () => import("@/i18n/locales/en/account.json"),
+    personas: () => import("@/i18n/locales/en/personas.json"),
   },
   ru: {
     common: () => import("@/i18n/locales/ru/common.json"),
@@ -33,6 +34,7 @@ const loaders: Record<
     "auth-providers": () => import("@/i18n/locales/ru/auth-providers.json"),
     "auth-email": () => import("@/i18n/locales/ru/auth-email.json"),
     account: () => import("@/i18n/locales/ru/account.json"),
+    personas: () => import("@/i18n/locales/ru/personas.json"),
   },
 };
 

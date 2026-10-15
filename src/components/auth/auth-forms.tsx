@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeftIcon } from "lucide-react";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 
 import { signIn, signUp } from "@/app/auth/actions";
 import { AuthProviders } from "@/components/auth/auth-providers";
@@ -21,7 +21,13 @@ import {
   parseAuthModalView,
 } from "@/lib/modals/query";
 
-function EmailSignInForm({ next }: { next?: string }) {
+function EmailSignInForm({
+  next,
+  emailPrefill,
+}: {
+  next?: string;
+  emailPrefill?: string;
+}) {
   const t = useT("auth-email");
   const [state, formAction, pending] = useActionState(
     signIn,
@@ -29,7 +35,12 @@ function EmailSignInForm({ next }: { next?: string }) {
   );
 
   return (
-    <form action={formAction} className="grid gap-4" noValidate>
+    <form
+      key={`${state.formKey}-${emailPrefill ?? ""}`}
+      action={formAction}
+      className="grid gap-4"
+      noValidate
+    >
       {next ? <input type="hidden" name="next" value={next} /> : null}
       <div className="grid gap-2">
         <Label htmlFor="login-email">{t("email")}</Label>
@@ -40,6 +51,7 @@ function EmailSignInForm({ next }: { next?: string }) {
           autoComplete="email"
           inputMode="email"
           required
+          defaultValue={state.values.email ?? emailPrefill ?? ""}
           aria-invalid={Boolean(state.fieldErrors.email) || undefined}
           aria-describedby={
             state.fieldErrors.email ? "login-email-error" : undefined
@@ -54,6 +66,7 @@ function EmailSignInForm({ next }: { next?: string }) {
           name="password"
           autoComplete="current-password"
           required
+          defaultValue={state.values.password ?? ""}
           invalid={Boolean(state.fieldErrors.password)}
           describedBy={
             state.fieldErrors.password ? "login-password-error" : undefined
@@ -76,15 +89,41 @@ function EmailSignInForm({ next }: { next?: string }) {
   );
 }
 
-function EmailSignUpForm() {
+function EmailSignUpForm({ next }: { next?: string }) {
   const t = useT("auth-email");
+  const { replaceParams } = useModalQuery();
   const [state, formAction, pending] = useActionState(
     signUp,
     initialAuthActionState,
   );
 
+  useEffect(() => {
+    if (state.message !== "checkEmail") {
+      return;
+    }
+
+    const email = state.values.email?.trim();
+    if (!email) {
+      return;
+    }
+
+    replaceParams({
+      [MODAL_PARAM]: authModal.id,
+      method: "email",
+      view: "check-email",
+      email,
+      next: next ?? null,
+      error: null,
+    });
+  }, [next, replaceParams, state.message, state.values.email]);
+
   return (
-    <form action={formAction} className="grid gap-4" noValidate>
+    <form
+      key={state.formKey}
+      action={formAction}
+      className="grid gap-4"
+      noValidate
+    >
       <div className="grid gap-2">
         <Label htmlFor="signup-email">{t("email")}</Label>
         <Input
@@ -94,6 +133,7 @@ function EmailSignUpForm() {
           autoComplete="email"
           inputMode="email"
           required
+          defaultValue={state.values.email ?? ""}
           aria-invalid={Boolean(state.fieldErrors.email) || undefined}
           aria-describedby={
             state.fieldErrors.email ? "signup-email-error" : undefined
@@ -111,6 +151,7 @@ function EmailSignUpForm() {
           name="password"
           autoComplete="new-password"
           required
+          defaultValue={state.values.password ?? ""}
           invalid={Boolean(state.fieldErrors.password)}
           describedBy={
             state.fieldErrors.password
@@ -133,6 +174,7 @@ function EmailSignUpForm() {
           name="confirmPassword"
           autoComplete="new-password"
           required
+          defaultValue={state.values.confirmPassword ?? ""}
           invalid={Boolean(state.fieldErrors.confirmPassword)}
           describedBy={
             state.fieldErrors.confirmPassword
@@ -150,11 +192,6 @@ function EmailSignUpForm() {
           {state.error}
         </p>
       ) : null}
-      {state.message ? (
-        <p className="text-sm text-muted-foreground" role="status">
-          {state.message === "checkEmail" ? t("checkEmail") : state.message}
-        </p>
-      ) : null}
       <Button type="submit" disabled={pending} className="w-full" size="lg">
         {pending ? t("creatingAccount") : t("createAccount")}
       </Button>
@@ -162,11 +199,74 @@ function EmailSignUpForm() {
   );
 }
 
+function CheckEmailPanel({
+  email,
+  next,
+}: {
+  email: string;
+  next?: string;
+}) {
+  const t = useT("auth-email");
+  const { replaceParams } = useModalQuery();
+
+  useEffect(() => {
+    const goToLogin = () => {
+      replaceParams({
+        [MODAL_PARAM]: authModal.id,
+        method: "email",
+        view: "login",
+        email: email || null,
+        next: next ?? null,
+        error: null,
+      });
+    };
+
+    const timer = window.setTimeout(goToLogin, 5000);
+    return () => window.clearTimeout(timer);
+  }, [email, next, replaceParams]);
+
+  return (
+    <div className="grid gap-4">
+      <p className="text-sm text-muted-foreground" role="status">
+        {t("checkEmail")}
+        {email ? (
+          <>
+            {" "}
+            <span className="font-medium text-foreground">{email}</span>
+          </>
+        ) : null}
+      </p>
+      <Button
+        type="button"
+        className="w-full"
+        size="lg"
+        onClick={() => {
+          replaceParams({
+            [MODAL_PARAM]: authModal.id,
+            method: "email",
+            view: "login",
+            email: email || null,
+            next: next ?? null,
+            error: null,
+          });
+        }}
+      >
+        {t("ok")}
+      </Button>
+    </div>
+  );
+}
+
 function EmailMethodPanel({ next }: { next?: string }) {
   const { replaceParams, searchParams } = useModalQuery();
   const view = parseAuthModalView(searchParams.get("view"));
+  const email = searchParams.get("email") ?? "";
   const tAuth = useT("auth");
   const tEmail = useT("auth-email");
+
+  if (view === "check-email") {
+    return <CheckEmailPanel email={email} next={next} />;
+  }
 
   return (
     <div className="grid gap-4">
@@ -180,6 +280,7 @@ function EmailMethodPanel({ next }: { next?: string }) {
             [MODAL_PARAM]: authModal.id,
             view: null,
             method: null,
+            email: null,
             next: next ?? null,
           });
         }}
@@ -196,6 +297,7 @@ function EmailMethodPanel({ next }: { next?: string }) {
               [MODAL_PARAM]: authModal.id,
               method: "email",
               view: value,
+              email: value === "login" ? email || null : null,
               next: next ?? null,
             });
           }
@@ -207,10 +309,10 @@ function EmailMethodPanel({ next }: { next?: string }) {
           <TabsTrigger value="signup">{tEmail("signUpTab")}</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
-          <EmailSignInForm next={next} />
+          <EmailSignInForm next={next} emailPrefill={email} />
         </TabsContent>
         <TabsContent value="signup">
-          <EmailSignUpForm />
+          <EmailSignUpForm next={next} />
         </TabsContent>
       </Tabs>
     </div>
